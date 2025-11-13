@@ -1,29 +1,7 @@
-name: Deploy to Fly (bru)
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - run: npm ci || npm install
-      - run: npm run build
-
-      - name: Install flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@master
-
       - name: Deploy
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          STORYBLOK_TOKEN: ${{ secrets.STORYBLOK_TOKEN }}
         run: |
           # schrijf fly.toml als die nog niet bestaat
           if [ ! -f fly.toml ]; then
@@ -31,7 +9,8 @@ jobs:
 app = "cnipheadless"
 primary_region = "bru"
 
-[build]
+[env]
+  STORYBLOK_TOKEN = "${STORYBLOK_TOKEN}"
 
 [[services]]
   internal_port = 3000
