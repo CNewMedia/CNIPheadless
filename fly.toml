@@ -1,0 +1,24 @@
+app = "cnipheadless"
+primary_region = "bru"
+
+[env]
+  # Fly leest dit op runtime uit je secret (STORYBLOK_TOKEN)
+  # Deze env key mag blijven staan; waarde hoeft hier niet ingevuld.
+  STORYBLOK_TOKEN = ""
+
+[[services]]
+  internal_port = 3000
+  processes = ["app"]
+  protocol = "tcp"
+
+  [services.concurrency]
+    hard_limit = 40
+    soft_limit = 20
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
