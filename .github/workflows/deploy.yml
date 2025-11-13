@@ -25,7 +25,7 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
-          # maak fly.toml als die nog niet bestaat
+          # schrijf fly.toml als die nog niet bestaat
           if [ ! -f fly.toml ]; then
             cat > fly.toml <<'EOF'
 app = "cnipheadless"
@@ -49,5 +49,5 @@ primary_region = "bru"
 EOF
           fi
 
-          # deploy (remote build, geen lokale tooling nodig)
+          # remote build & deploy
           flyctl deploy --remote-only --build-arg NEXT_TELEMETRY_DISABLED=1
