@@ -26,4 +26,4 @@ primary_region = "bru"
 EOF
 
     flyctl secrets set STORYBLOK_TOKEN="${STORYBLOK_TOKEN}" -a cnipheadless -y
-    flyctl deploy --remote-only --build-arg NEXT_TELEMETRY_DISABLED=1
+    flyctl deploy --remote-only --build-arg NEXT_TELEMETRY_DISABLED=1 
