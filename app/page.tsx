@@ -8,28 +8,35 @@ import Lenis from "@studio-freight/lenis";
 export default function HomePage() {
   useEffect(() => {
     // === Page loader ===
-    const pl = document.querySelector(".page-loader") as HTMLElement | null;
-    if (pl) {
-      const hideLoader = () => {
-        pl.classList.add("hidden");
-        setTimeout(() => {
-          pl.classList.add("force-hide");
-          pl.style.display = "none";
-        }, 600);
-      };
+    const loader = document.querySelector(".page-loader") as HTMLElement | null;
 
-      window.addEventListener("load", () => {
-        setTimeout(hideLoader, 200);
-      });
+    const hideLoader = () => {
+      if (!loader) return;
+      loader.classList.add("hidden");
+      setTimeout(() => {
+        loader.classList.add("force-hide");
+        loader.style.display = "none";
+      }, 600);
+    };
 
+    const onLoad = () => {
+      setTimeout(hideLoader, 200);
+    };
+
+    if (loader) {
+      window.addEventListener("load", onLoad);
+      // fallback na max 1s
       setTimeout(hideLoader, 1000);
     }
 
     // === Floating CTA visibility ===
     const floatingCta = document.getElementById("floatingCta");
     const hero = document.querySelector(".hero");
+
+    let heroObserver: IntersectionObserver | null = null;
+
     if (floatingCta && hero && "IntersectionObserver" in window) {
-      const observer = new IntersectionObserver(
+      heroObserver = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) {
@@ -42,7 +49,7 @@ export default function HomePage() {
         { threshold: 0.1 }
       );
 
-      observer.observe(hero);
+      heroObserver.observe(hero);
     }
 
     // === Video play button ===
@@ -73,57 +80,37 @@ export default function HomePage() {
       });
     });
 
-
     // === Lenis smooth scroll + GSAP ScrollTrigger ===
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Lenis initialiseren
     const lenis = new Lenis({
-      lerp: 0.1,          // hoe "smooth" (0–1)
-      wheelMultiplier: 1, // scroll-gevoel
+      lerp: 0.1,
+      wheelMultiplier: 1,
       touchMultiplier: 1.2,
       smoothWheel: true,
       smoothTouch: true,
     });
 
-    // 2. Lenis en GSAP aan elkaar koppelen
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
+
     requestAnimationFrame(raf);
 
     lenis.on("scroll", () => {
       ScrollTrigger.update();
     });
 
-    // 3. Animaties op je kaarten
-    gsap.utils
-      .toArray<HTMLElement>(".service-card, .work-item, .client-card")
-      .forEach((el, i) => {
-        gsap.from(el, {
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
-          delay: i * 0.03,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 85%",
-            once: true,
-          },
-        });
-      });
-
-    // 4. Cleanup bij unmount (veiligheid)
+    // Cleanup
     return () => {
+      window.removeEventListener("load", onLoad);
+      if (heroObserver) {
+        heroObserver.disconnect();
+      }
       lenis.destroy();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-
-
-    
-  
   }, []);
 
   return (
@@ -651,7 +638,7 @@ export default function HomePage() {
               <input
                 type="hidden"
                 name="redirect"
-                value="https://cnip.be/bedankt.html"
+                value="https://cnip.be/bedankt"
               />
 
               <div className="form-group">
@@ -768,4 +755,4 @@ export default function HomePage() {
       </footer>
     </>
   );
-} 
+}
