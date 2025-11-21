@@ -83,13 +83,14 @@ export default function HomePage() {
     // === Lenis smooth scroll + GSAP ScrollTrigger ===
     gsap.registerPlugin(ScrollTrigger);
 
+
     const lenis = new Lenis({
-      lerp: 0.1,
-      wheelMultiplier: 1,
-      touchMultiplier: 1.2,
-      smoothWheel: true,
-      smoothTouch: true,
-    });
+  lerp: 0.1,
+  wheelMultiplier: 1,
+  touchMultiplier: 1.2,
+  smoothWheel: true,
+});
+
 
     function raf(time: number) {
       lenis.raf(time);
